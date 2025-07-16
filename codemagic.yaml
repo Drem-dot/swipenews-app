@@ -1,18 +1,24 @@
-# codemagic.yaml
+# codemagic.yaml - Phiên bản đã được sửa lỗi và tối ưu hóa
+
 workflows:
   android-workflow:
     name: Android Workflow
-    instance_type: mac_mini_m1
+    instance_type: mac_mini_m2
     max_build_duration: 60
     environment:
       android_signing:
         - keystore_reference # Tạo trong Codemagic UI
       groups:
-        - firebase_credentials # Tạo group trong Codemagic UI
+        - firebase_credentials # Tạo group chứa biến môi trường cho Firebase
       vars:
         PACKAGE_NAME: "com.example.swipenews"
       flutter: stable
       
+    # Thêm cache để tăng tốc độ build
+    cache:
+      cache_paths:
+        - $HOME/.pub-cache
+        
     scripts:
       - name: Set up local.properties
         script: |
@@ -20,31 +26,30 @@ workflows:
           
       - name: Setup Firebase configuration
         script: |
-          # Make script executable
+          # Bước 1: Tạo tệp cấu hình Firebase TRƯỚC TIÊN.
+          # Đảm bảo script này tồn tại trong repository của bạn tại 'scripts/setup_firebase.sh'
           chmod +x scripts/setup_firebase.sh
-          # Run setup script
           ./scripts/setup_firebase.sh
-          
-      - name: Get Flutter packages
-        script: |
-          flutter packages pub get
           
       - name: Flutter analyze
         script: |
+          # Bước 2: Phân tích mã nguồn sau khi đã có đầy đủ các tệp cấu hình.
           flutter analyze
           
-      - name: Build APK
+      - name: Build Android App Bundle (AAB)
         script: |
-          flutter build apk --release
+          # Bước 3: Build file AAB. Lệnh này sẽ tự động chạy 'pub get' nếu cần.
+          flutter build appbundle --release
           
     artifacts:
-      - build/**/outputs/**/*.apk
-      - build/**/outputs/**/mapping.txt
+      # Cập nhật đường dẫn để lấy file .aab
+      - build/app/outputs/bundle/release/*.aab
+      - build/app/outputs/mapping.txt
       
     publishing:
       email:
         recipients:
-          - your-email@example.com
+          - your-email@example.com # Thay bằng email của bạn
         notify:
           success: true
           failure: true
@@ -54,37 +59,50 @@ workflows:
     instance_type: mac_mini_m1
     max_build_duration: 60
     integrations:
-      app_store_connect: codemagic # Configure trong UI
+      app_store_connect: codemagic # Cấu hình trong Codemagic UI
     environment:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.example.swipenews
       groups:
-        - firebase_credentials
+        - firebase_credentials # Chứa biến môi trường cho Firebase
       vars:
-        APP_ID: 1234567890 # Your App Store Connect app ID
+        APP_ID: 1234567890 # Thay bằng App Store Connect App ID của bạn
       flutter: stable
+      xcode: latest
+      cocoapods: default
       
+    # Thêm cache cho cả Flutter và CocoaPods
+    cache:
+      cache_paths:
+        - $HOME/.pub-cache
+        - $CM_BUILD_DIR/ios/Pods
+        
     scripts:
       - name: Setup Firebase configuration
         script: |
+          # Bước 1: Tạo tệp firebase_options.dart TRƯỚC TIÊN.
           chmod +x scripts/setup_firebase.sh
           ./scripts/setup_firebase.sh
           
-      - name: Set up code signing settings on Xcode project
-        script: |
-          xcode-project use-profiles
-          
       - name: Get Flutter packages
         script: |
+          # Bước 2: Lấy packages để tạo Podfile chính xác.
           flutter packages pub get
           
       - name: Install pods
         script: |
+          # Bước 3: Cài đặt các thư viện native cho iOS.
           find . -name "Podfile" -execdir pod install \;
+          
+      - name: Set up code signing settings on Xcode project
+        script: |
+          # Bước 4: Cấu hình signing trên dự án Xcode.
+          xcode-project use-profiles
           
       - name: Flutter build ipa
         script: |
+          # Bước 5: Build file IPA với số build tự động tăng.
           flutter build ipa --release \
             --build-name=1.0.0 \
             --build-number=$(($(app-store-connect get-latest-app-store-build-number "$APP_ID") + 1)) \
@@ -99,5 +117,6 @@ workflows:
       app_store_connect:
         auth: integration
         submit_to_testflight: true
+        # Thay 'group_name' bằng tên nhóm Beta thực tế trên TestFlight của bạn
         beta_groups:
-          - group_name
+          - group_name 
