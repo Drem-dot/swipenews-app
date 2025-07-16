@@ -26,7 +26,13 @@ workflows:
         script: |
           chmod +x scripts/setup_firebase.sh
           ./scripts/setup_firebase.sh
-          
+      
+      - name: Force set Gradle memory options
+        script: |
+          echo "org.gradle.jvmargs=-Xmx4g" >> "$CM_BUILD_DIR/android/gradle.properties"
+          echo "--- Current gradle.properties ---"
+          cat "$CM_BUILD_DIR/android/gradle.properties"
+          echo "---------------------------------"    
       - name: Flutter analyze
         script: |
           flutter analyze
@@ -60,7 +66,7 @@ workflows:
         distribution_type: app_store
         bundle_identifier: com.example.swipenews
       groups:
-        - firebase_credentials # Chứa biến môi trường cho Firebase
+        - swipenews # Chứa biến môi trường cho Firebase
       vars:
         APP_ID: 1234567890 # Thay bằng App Store Connect App ID của bạn
       flutter: stable
