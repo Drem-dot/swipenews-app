@@ -1,6 +1,9 @@
 # SwipeNews 📰
 
 SwipeNews là ứng dụng đọc tin tức thông minh với giao diện swipe hiện đại, được xây dựng bằng Flutter và Firebase. Ứng dụng tự động thu thập tin tức từ các trang báo lớn của Việt Nam và cá nhân hóa nội dung dựa trên sở thích người dùng.
+# SwipeNews 📰
+
+SwipeNews là ứng dụng đọc tin tức thông minh với giao diện swipe hiện đại, được xây dựng bằng Flutter và Firebase. Ứng dụng tự động thu thập tin tức từ các trang báo lớn của Việt Nam và cá nhân hóa nội dung dựa trên sở thích người dùng.
 
 ## 📱 Tính năng chính
 
@@ -190,7 +193,7 @@ lib/
 Tạo file .env cho development:
 
 ```bash
-WEB_CLIENT_ID=your_web_client_id_here
+WEB_CLIENT_ID=128128649313-8uurnl9tq7kkr11ek9j76t70fr0n8p43.apps.googleusercontent.com
 ```
 
 **Build Configuration**
@@ -220,7 +223,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 📞 Contact
 
-- Your Name - @yourusername
 - Project Link: https://github.com/Drem-dot/swipenews-app
 
 <p align="center">Made with ❤️ in Vietnam</p>
