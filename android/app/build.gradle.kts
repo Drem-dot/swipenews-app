@@ -51,7 +51,7 @@ flutter {
 configurations.all {
     resolutionStrategy.eachDependency {
         if (requested.group == "org.jetbrains.kotlin") {
-            useVersion("1.8.22")
+            useVersion("2.1.0")
         }
     }
 }
