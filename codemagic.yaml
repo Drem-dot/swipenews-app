@@ -8,7 +8,7 @@ workflows:
     environment:
       # KHÔNG CẦN android_signing nữa, nên đã xóa đi
       groups:
-        - firebase_credentials
+        - swipenews
       vars:
         PACKAGE_NAME: "com.example.swipenews"
       flutter: stable
