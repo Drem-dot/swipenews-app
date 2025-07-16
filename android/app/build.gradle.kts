@@ -46,11 +46,12 @@ flutter {
     source = "../.."
 }
 
-// DÁN TOÀN BỘ KHỐI MÃ NÀY VÀO CUỐI CÙNG CỦA TỆP
+// THAY THẾ KHỐI CŨ BẰNG KHỐI NÀY
+
 configurations.all {
-    resolutionStrategy {
-        force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22'
-        force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22'
-        force 'org.jetbrains.kotlin:kotlin-stdlib:1.8.22'
+    resolutionStrategy.eachDependency {
+        if (requested.group == "org.jetbrains.kotlin") {
+            useVersion("1.8.22")
+        }
     }
 }
