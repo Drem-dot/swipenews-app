@@ -1,4 +1,4 @@
-# codemagic.yaml - Phiên bản đã được sửa lỗi và tối ưu hóa
+# codemagic.yaml
 
 workflows:
   android-workflow:
@@ -6,15 +6,13 @@ workflows:
     instance_type: mac_mini_m2
     max_build_duration: 60
     environment:
-      android_signing:
-        - keystore_reference # Tạo trong Codemagic UI
+      # KHÔNG CẦN android_signing nữa, nên đã xóa đi
       groups:
-        - firebase_credentials # Tạo group chứa biến môi trường cho Firebase
+        - firebase_credentials
       vars:
         PACKAGE_NAME: "com.example.swipenews"
       flutter: stable
       
-    # Thêm cache để tăng tốc độ build
     cache:
       cache_paths:
         - $HOME/.pub-cache
@@ -26,37 +24,34 @@ workflows:
           
       - name: Setup Firebase configuration
         script: |
-          # Bước 1: Tạo tệp cấu hình Firebase TRƯỚC TIÊN.
-          # Đảm bảo script này tồn tại trong repository của bạn tại 'scripts/setup_firebase.sh'
           chmod +x scripts/setup_firebase.sh
           ./scripts/setup_firebase.sh
           
       - name: Flutter analyze
         script: |
-          # Bước 2: Phân tích mã nguồn sau khi đã có đầy đủ các tệp cấu hình.
           flutter analyze
           
-      - name: Build Android App Bundle (AAB)
+      - name: Build Android APK (Debug)
         script: |
-          # Bước 3: Build file AAB. Lệnh này sẽ tự động chạy 'pub get' nếu cần.
-          flutter build appbundle --release
+          # Đổi sang build file APK với chế độ debug
+          flutter build apk --debug
           
     artifacts:
-      # Cập nhật đường dẫn để lấy file .aab
-      - build/app/outputs/bundle/release/*.aab
-      - build/app/outputs/mapping.txt
+      # Cập nhật đường dẫn để lấy file APK debug
+      - build/app/outputs/flutter-apk/app-debug.apk
+      - build/**/outputs/**/mapping.txt
       
     publishing:
       email:
         recipients:
-          - your-email@example.com # Thay bằng email của bạn
+          - your-email@example.com
         notify:
           success: true
           failure: true
 
   ios-workflow:
     name: iOS Workflow
-    instance_type: mac_mini_m1
+    instance_type: mac_mini_m2
     max_build_duration: 60
     integrations:
       app_store_connect: codemagic # Cấu hình trong Codemagic UI
