@@ -7,6 +7,10 @@ import '../config/environment.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  static const String webClientId = String.fromEnvironment(
+    'WEB_CLIENT_ID',
+    defaultValue: '128128649313-8uurnl9tq7kkr11ek9j76t70fr0n8p43.apps.googleusercontent.com',
+  );
 
   Future<User?> signInAnonymously() async {
     try {
