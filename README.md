@@ -1,9 +1,6 @@
 # SwipeNews 📰
 
 SwipeNews là ứng dụng đọc tin tức thông minh với giao diện swipe hiện đại, được xây dựng bằng Flutter và Firebase. Ứng dụng tự động thu thập tin tức từ các trang báo lớn của Việt Nam và cá nhân hóa nội dung dựa trên sở thích người dùng.
-# SwipeNews 📰
-
-SwipeNews là ứng dụng đọc tin tức thông minh với giao diện swipe hiện đại, được xây dựng bằng Flutter và Firebase. Ứng dụng tự động thu thập tin tức từ các trang báo lớn của Việt Nam và cá nhân hóa nội dung dựa trên sở thích người dùng.
 
 ## 📱 Tính năng chính
 
