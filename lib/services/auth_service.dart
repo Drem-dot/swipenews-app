@@ -75,33 +75,41 @@ class AuthService {
     }
 
     try {
+      debugPrint("AuthService: Initializing GoogleSignIn with serverClientId: $webClientId");
       await GoogleSignIn.instance.initialize(serverClientId: webClientId);
+      debugPrint("AuthService: GoogleSignIn initialized. Attempting to authenticate...");
       final GoogleSignInAccount googleUser = await GoogleSignIn.instance
           .authenticate();
+      debugPrint("AuthService: GoogleSignIn authentication successful for user: ${googleUser.email}");
 
       final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+      debugPrint("AuthService: Got GoogleSignInAuthentication. ID Token available: ${googleAuth.idToken != null}");
       final AuthCredential credential = GoogleAuthProvider.credential(
         idToken: googleAuth.idToken,
       );
+      debugPrint("AuthService: Created AuthCredential.");
 
       final currentUser = FirebaseAuth.instance.currentUser;
+      debugPrint("AuthService: Current Firebase user: ${currentUser?.uid ?? 'None'}");
 
       if (currentUser != null && currentUser.isAnonymous) {
-        debugPrint("Phát hiện người dùng ẩn danh. Đang thử liên kết...");
+        debugPrint("AuthService: Anonymous user detected. Attempting to link with Google credential...");
         final result = await currentUser.linkWithCredential(credential);
-        debugPrint("Liên kết tài khoản ẩn danh thành công!");
+        debugPrint("AuthService: Anonymous account linking successful!");
         return result.user;
       }
 
-      debugPrint("Đăng nhập Google bình thường...");
+      debugPrint("AuthService: Performing normal Google sign-in...");
       final result = await FirebaseAuth.instance.signInWithCredential(
         credential,
       );
+      debugPrint("AuthService: Normal Google sign-in successful for user: ${result.user?.uid}");
       return result.user;
     } on FirebaseAuthException catch (e) {
+      debugPrint("AuthService: FirebaseAuthException during Google Sign-In: ${e.code}");
       if (e.code == 'credential-already-in-use') {
         debugPrint(
-          'Tài khoản Google đã tồn tại, đang thực hiện đăng nhập trực tiếp...',
+          'AuthService: Google account already exists, attempting direct sign-in...',
         );
 
         final AuthCredential? credential = e.credential;
@@ -116,16 +124,16 @@ class AuthService {
             return result.user;
           } catch (e) {
             debugPrint(
-              "Lỗi khi cố gắng đăng nhập lại bằng credential đã có: $e",
+              "AuthService: Error attempting to sign in again with existing credential: $e",
             );
             return null;
           }
         }
       }
-      debugPrint('Lỗi FirebaseAuthException khác: ${e.code}');
+      debugPrint('AuthService: Other FirebaseAuthException: ${e.code}');
       return null;
     } catch (e) {
-      debugPrint('Đã xảy ra lỗi không xác định: $e');
+      debugPrint('AuthService: An unknown error occurred: $e');
       return null;
     }
   }
